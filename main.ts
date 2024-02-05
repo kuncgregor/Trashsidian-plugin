@@ -64,7 +64,7 @@ export default class Trashplugin extends Plugin {
 		});
 
 		this.addRibbonIcon("beer", "žeja", () => {
-			new Notice("Sem sortiral Na zdravje!");
+			//new Notice("Sem sortiral Na zdravje!");
 			const trezor = this.app.vault.getFiles();
 			if (trezor != null) {
 				this.movePdfFiles();
@@ -85,16 +85,23 @@ export default class Trashplugin extends Plugin {
 		const Files = fajli.filter((file) =>
 			file.path.endsWith(this.settings.FileExtension)
 		);
+		console.log(Files.length);
+		if (Files.length <= 0) {
+			console.error(`Files '${Files}' not found.`);
+			new Notice("ni nastavljenga fileextentiona");
+			return;
+		}
 		const destinationFolderPath =
 			this.app.vault.getAbstractFileByPath(FolderName)?.path;
 		if (!destinationFolderPath) {
 			console.error(`Folder '${FolderName}' not found.`);
+			new Notice("ni nastavljenga folderja");
 			return;
 		}
-		for (const pdfFile of Files) {
+		for (const filename of Files) {
 			await this.app.vault.rename(
-				pdfFile,
-				`${destinationFolderPath}/${pdfFile.name}`
+				filename,
+				`${destinationFolderPath}/${filename.name}`
 			);
 		}
 		console.log(Files);
