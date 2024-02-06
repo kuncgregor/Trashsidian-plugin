@@ -68,6 +68,8 @@ export default class Trashplugin extends Plugin {
 			const trezor = this.app.vault.getFiles();
 			if (trezor != null) {
 				this.movePdfFiles();
+			} else {
+				new Notice("Prazen volt");
 			}
 		});
 
@@ -97,6 +99,8 @@ export default class Trashplugin extends Plugin {
 			console.error(`Folder '${FolderName}' not found.`);
 			new Notice("ni nastavljenga folderja");
 			return;
+		} else {
+			new Notice("Sem sortiral Na zdravje!");
 		}
 		for (const filename of Files) {
 			await this.app.vault.rename(
