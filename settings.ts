@@ -30,9 +30,31 @@ export class TrashSettings extends PluginSettingTab {
 				.setName("File destination")
 				.setDesc("Izberi ime mape, katero boš sortiral")
 				.addText((item) => {
-					item.setValue(this.plugin.settings.NameFolder).onChange(
+					item.setValue(this.plugin.settings.NameFileFolder).onChange(
 						(value) => {
-							this.plugin.settings.NameFolder = value;
+							this.plugin.settings.NameFileFolder = value;
+							this.plugin.saveSettings();
+						}
+					);
+				});
+			new Setting(containerEl)
+				.setName("Note File name")
+				.setDesc("Izberi začetno ime Note fijlou za sortirati")
+				.addText((item) => {
+					item.setValue(this.plugin.settings.FilePrefix).onChange(
+						(value) => {
+							this.plugin.settings.FilePrefix = value;
+							this.plugin.saveSettings();
+						}
+					);
+				});
+			new Setting(containerEl)
+				.setName("Note File destination")
+				.setDesc("Izberi destinacijo note fajlou")
+				.addText((item) => {
+					item.setValue(this.plugin.settings.NameNoteFolder).onChange(
+						(value) => {
+							this.plugin.settings.NameNoteFolder = value;
 							this.plugin.saveSettings();
 						}
 					);

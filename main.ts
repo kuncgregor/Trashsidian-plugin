@@ -13,12 +13,14 @@ import { TrashSettings } from "settings";
 let settingsknof;
 let test;
 interface TrashsidaianPluginSetting {
-	NameFolder: string;
+	NameFileFolder: string;
 	FileExtension: string;
+	NameNoteFolder: string;
+	FilePrefix: string;
 }
 
 const DEFAULT_SETTINGS: Partial<TrashsidaianPluginSetting> = {
-	NameFolder: "PDFs",
+	NameFileFolder: "PDFs",
 	FileExtension: ".pdf",
 };
 
@@ -67,7 +69,8 @@ export default class Trashplugin extends Plugin {
 			//new Notice("Sem sortiral Na zdravje!");
 			const trezor = this.app.vault.getFiles();
 			if (trezor != null) {
-				this.movePdfFiles();
+				this.moveFiles();
+				this.moveNoteFiles();
 			} else {
 				new Notice("Prazen volt");
 			}
@@ -81,8 +84,37 @@ export default class Trashplugin extends Plugin {
 			console.log("bruuh");
 		}
 	}
-	async movePdfFiles() {
-		const FolderName = this.settings.NameFolder;
+	async moveNoteFiles() {
+		const FolderName = this.settings.NameNoteFolder;
+		const fajli = this.app.vault.getFiles();
+		const Files = fajli.filter((file) =>
+			file.path.startsWith(this.settings.FilePrefix)
+		);
+		console.log(Files.length);
+		if (Files.length <= 0) {
+			console.error(`Files '${Files}' not found.`);
+			new Notice("ni nastavljenga fileextentiona");
+			return;
+		}
+		const destinationFolderPath =
+			this.app.vault.getAbstractFileByPath(FolderName)?.path;
+		if (!destinationFolderPath) {
+			console.error(`Folder '${FolderName}' not found.`);
+			new Notice("ni nastavljenga folderja");
+			return;
+		} else {
+			new Notice("Sem sortiral Na zdravje!");
+		}
+		for (const filename of Files) {
+			await this.app.vault.rename(
+				filename,
+				`${destinationFolderPath}/${filename.name}`
+			);
+		}
+		console.log(Files);
+	}
+	async moveFiles() {
+		const FolderName = this.settings.NameFileFolder;
 		const fajli = this.app.vault.getFiles();
 		const Files = fajli.filter((file) =>
 			file.path.endsWith(this.settings.FileExtension)
