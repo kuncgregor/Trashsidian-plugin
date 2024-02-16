@@ -9,7 +9,9 @@ import {
 	Setting,
 	TFile,
 } from "obsidian";
+import * as fileSystem from "fs";
 import { TrashSettings } from "settings";
+import { mkdir, stat } from "fs";
 let settingsknof;
 let test;
 interface TrashsidaianPluginSetting {
@@ -53,18 +55,6 @@ export default class Trashplugin extends Plugin {
 			},
 		});
 
-		this.addCommand({
-			id: "znaki",
-			name: "označvanje",
-			editorCallback: (editor, view) => {
-				const value = editor
-					.getValue()
-					.replace(/^\#(.*)$/gm, (match) => match + "BRUUH");
-
-				editor.setValue(value);
-			},
-		});
-
 		this.addRibbonIcon("beer", "žeja", () => {
 			//new Notice("Sem sortiral Na zdravje!");
 			const trezor = this.app.vault.getFiles();
@@ -84,6 +74,7 @@ export default class Trashplugin extends Plugin {
 			console.log("bruuh");
 		}
 	}
+
 	async moveNoteFiles() {
 		const FolderName = this.settings.NameNoteFolder;
 		const fajli = this.app.vault.getFiles();
@@ -129,8 +120,9 @@ export default class Trashplugin extends Plugin {
 			this.app.vault.getAbstractFileByPath(FolderName)?.path;
 		if (!destinationFolderPath) {
 			console.error(`Folder '${FolderName}' not found.`);
-			new Notice("ni nastavljenga folderja");
-			return;
+			// new Notice("ni nastavljenga folderja");
+			// return;
+			this.createFolder(FolderName);
 		} else {
 			new Notice("Sem sortiral Na zdravje!");
 		}
@@ -141,6 +133,28 @@ export default class Trashplugin extends Plugin {
 			);
 		}
 		console.log(Files);
+	}
+
+	createFolder(folderPath: string): void {
+		stat(folderPath, (err, stats) => {
+			if (err) {
+				if (err.code === "ENOENT") {
+					mkdir(folderPath, { recursive: true }, (err) => {
+						if (err) {
+							console.error(`Error creating folder: ${err}`);
+						} else {
+							console.log(
+								`Folder "${folderPath}" created successfully.`
+							);
+						}
+					});
+				} else {
+					console.error(`Error checking folder existence: ${err}`);
+				}
+			} else {
+				console.log(`Folder "${folderPath}" already exists.`);
+			}
+		});
 	}
 
 	onunload() {
